@@ -1,57 +1,73 @@
-function [ y ] = New_Trial_Kummer_lambda(Pf)
+function [ y ] = New_Trial_Kummer_R_approch_C(c)
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
 
+%Pf = 0.1;
+std_dev = 10.^(5./10);  % ==1.20
 
-std_dev = 10.^(0.806./10);
+mu = 10.^(8./10); % ==0.406
 %Pf = 0.1;
 u = 5;
-lambda = ones(1, length(Pf));
-for i = 1:length(Pf)
-lambda(i) = 2*(gammaincinv(1-Pf(i), u./2));
-end
-lambda
-mu = 10.^(-3.914./10);
-c = 1.5;
-A = gamma(1+2./c).^(c./2);
+%lambda = ones(1, length(Pf));
 
-time  = [-1.2247 0 1.2247];
-W = [0.2954 1.1816 0.2954];
+  %  syms lamb;
+   % a = check(u, lamb) == Pf*gamma(u);
+   % lambda = solve(a, lamb);
+lambda(1) = 15.98;
 
-alpha = zeros(1, length(time));
-for i = 1:length(time)    
-     alpha(i) = exp(-1*c./2.*((sqrt(2)*std_dev.*(time(i))) + mu)); % mu == mean
-end
+%lamb = sym('lamb');
+
+% == Pf*gamma(u);
+%y = solve(a, lamb);
+%r = a == P*gamma(U);
+%lambda = solve(base, lamb);
+ 
+%mu = 10.^(-3.914./10);
+%c = 0.5;
+
+%time  = [-1.2247 0 1.2247];
+%W = [0.2954 1.1816 0.2954];
+di = [0.66 0.1667 0.1667];
+
+%alpha = zeros(1, length(time));
+%for i = 1:length(time)    
+ %    alpha(i) = exp(-1*c./2.*((sqrt(2)*std_dev.*(time(i))) + mu)); % mu == mean
+%end
      
-Y = zeros(1, length(mu));
-for j = 1: length(Pf)
+%Y = zeros(1, length(H));
 
+Y = zeros(1,length(c));
+     
+X = [mu  mu+sqrt(3)*std_dev  mu-sqrt(3)*std_dev];
 
+for j = 1: length(c)
+A = gamma(1+2./c(j)).^(c(j)./2);
+A
+g = zeros(1,1);
+for h = 1:length(X)
+%y = zeros(1,1);
 % for alpha i
      
 
-     y = zeros(1,1);
-     for i= 1:length(time)
-
               out1 = zeros(1,1);
               for L = 0:u-1
-              out1 = (((lambda(j))^L)*(exp(-1*(lambda(j)./2))))./((gamma(L+1))*(2^L)) + out1;
+              out1 = (((lambda(1))^L)*(exp(-1*(lambda(1)./2))))./((gamma(L+1))*(2^L)) + out1;
               end
-   
+   out1 = out1*di(h);
               out2  = zeros(1,1);
-              for k = 0:10
-              out2  = ((lambda(j).^u)*((-1).^k)*gamma(1+c*k/2)*((A*alpha(i)).^k)*kummer((1+c*k./2, u+1, lambda(j)/2))/((2.^(u/2))*(2.^(c*k/2))*gamma(k+1)*(exp(lambda(j)/2))*gamma(u+1)) + out2 ;
+              for k = 0:101
+              out2  = ((lambda(1).^u)*((-1).^k)*gamma(1+c(j)*k/2)*((A.^k)*kummer(1+c(j)*k./2 , u+1, lambda(1)./2)))./((2.^(u))*(exp(X(h)).^(c(j)*k/2))*gamma(k+1)*(exp(lambda(1)./2))*gamma(u+1)) + out2 ;
+             
               end
-
-      y = W(i)*(out1 + out2) + y;
-     end
-
-      y = (1./sqrt(pi)).*y;
-
-   Y(j) = y;
+              
+out2 = out2*di(h);
+g = out1 + out2 +g;
+end
+y = g;
+Y(j) = y;
 
 end
-plot(Pf, Y)
+plot(c, Y)
 %function [out] = sum1()
 %out = 1;
 %for L = 0:u-1
