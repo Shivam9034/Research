@@ -4,14 +4,14 @@ function [ y ] = H_Function_NewTrial(an,An,ap, Ap,bm, Bm, bq, Bq, Z )
 %   Detailed explanation goes here
 
 %% Contour preparation:
-epsilon = 10^1.2;
-Sups = min((1-an)./An); Infs = max(-bm./Bm);
+epsilon = 1;
+Sups = max((1-an)./An); Infs = min(-bm./Bm);
 if(isempty(Sups) && isempty(Infs))
 WPx=1;
 elseif(isempty(Sups) && ~isempty(Infs))
-WPx = Infs +epsilon;
+WPx = Infs -epsilon;
 elseif(~isempty(Sups) && isempty(Infs))
-WPx = Sups -epsilon;
+WPx = Sups +epsilon;
 else
 WPx = (Sups + Infs)/2;% s between Sups and Infs
 end
