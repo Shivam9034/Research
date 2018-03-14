@@ -1,36 +1,4 @@
 function [ y ] = New_Trial_Kummer_Marcum_approch_C(c)
-%UNTITLED4 Summary of this function goes here
-%   Detailed explanation goes here
-
-%Pf = 0.1;
-
-%lambda = ones(1, length(Pf));
-
-  %  syms lamb;
-   % a = check(u, lamb) == Pf*gamma(u);
-   % lambda = solve(a, lamb);
-
-
-%lamb = sym('lamb');
-
-% == Pf*gamma(u);
-%y = solve(a, lamb);
-%r = a == P*gamma(U);
-%lambda = solve(base, lamb);
- 
-%mu = 10.^(-3.914./10);
-%c = 0.5;
-
-%time  = [-1.2247 0 1.2247];
-%W = [0.2954 1.1816 0.2954];
-
-
-%alpha = zeros(1, length(time));
-%for i = 1:length(time)    
- %    alpha(i) = exp(-1*c./2.*((sqrt(2)*std_dev.*(time(i))) + mu)); % mu == mean
-%end
-     
-%Y = zeros(1, length(H));
 
 Y = zeros(1,length(c));
 

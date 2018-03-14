@@ -1,27 +1,43 @@
-function [ y ] = H_Function_NewTrial(an,An,ap, Ap,bm, Bm, bq, Bq, Z )
+function [ y ] = H_Function_withpoints(an,An,ap, Ap,bm, Bm, bq, Bq, Z )
 
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
 %% Contour preparation:
-epsilon = 10.^(1.2);
-Sups = min((1-an)./An); Infs = max(-bm./Bm);
+epsilon = 10.^(-4);
+Sups = (1-an)./An; Infs = -bm./Bm;
 if(isempty(Sups) && isempty(Infs))
 WPx=1;
 elseif(isempty(Sups) && ~isempty(Infs))
-WPx = Infs +epsilon;
-elseif(~isempty(Sups) && isempty(Infs))
-WPx = Sups +epsilon;
+WPx = max(Infs)  + epsilon;
+elseif(~isempty(Sups) && isempty(Infs))  
+WPx = min(Sups) + epsilon;
 else
-WPx = (Sups + Infs)/2;% s between Sups and Infs
+%a = [1 2 3];
+%b = [4 5 6 7];
+
+z  = length(Sups);
+Sups = [Sups zeros(1,length(Infs))];
+Sups
+Infs = [zeros(1,z) Infs];
+Infs
+new_points = Sups + Infs;
+new_points
+WPx = pole_value(new_points,epsilon);
+
 end
 
 infity = 10;
-
+x = zeros(1,length(WPx));
+WPx
+for f = 1:length(WPx)
 fun  = @(s) ((for_m(s, bm, Bm)).*(for_n(s,an, An)).*(Z.^(-s))./((for_q(s,bq, Bq)).*(for_p(s,ap, Ap)))); 
-y = (1./(2*pi*1i))*integral(fun, WPx-1i*100, WPx+1i*100);
 
+x(f) = (1./(2*pi*1i))*integral(fun, WPx(f)-1i*100, WPx(f)+1i*100);
 
+end
+x
+y = sum(x);
 
 function [ Out_m ] = for_m(x, bm, Bm)
 m = length(bm);
@@ -34,7 +50,7 @@ else
     Out_m = (gammaZ(bm(k) + Bm(k).*x)).*(Out_m); 
     end
 end
-Out_m
+
 end
 
 function [ Out_n ] = for_n(x, an, An)
@@ -48,7 +64,7 @@ else
     Out_n = (gammaZ(1 - an(k) - An(k).*x)).*(Out_n); 
     end
 end
-Out_n
+
 end
 
 function [ Out_q ] = for_q(x,bq, Bq)
@@ -62,7 +78,7 @@ for k = 1 : q
     Out_q = (gammaZ(1 - bq(k) - Bq(k).*x)).*(Out_q); 
 end
 end
-Out_q
+
 end
 
 function [ Out_p ] = for_p(x, ap, Ap)
@@ -76,10 +92,24 @@ for k = 1:p
     Out_p = (gammaZ(ap(k) + Ap(k).*x)).*(Out_p); 
 end
 end
-Out_p
+
 end
 
 
+end
+function [y] = pole_value(z, margin)
+z = sort(z);
+if length(z) ==1
+    
+    y = [z-margin z+margin];
+    y
+else
+    t = zeros(1,length(z)-1);
+    for j = 1:length(z)-1
+    t(j) = (z(j) +z(j+1))./2;
+    end
+    y = [min(z)-margin t max(z)+margin];
+end
 end
 
 function [f] = gammaZ(z)

@@ -1,11 +1,11 @@
-function [ y ] = New_trial_excact_Use_H_try( Pf )
+function [ y ] = New_trial_optimum_threshold_PTE( Lambda )
 
-std_dev = 1;
-
+std_dev = 2;
+lambda = 10.^(Lambda./10);
 u = 5;
-lambda = [15.98 13.44 11.78 10.47 9.34 8.29 7.26 6.17 4.86 0]; % for u == 5
-mu =0;
-c = 4.5;
+%lambda = [15.98 13.44 11.78 10.47 9.34 8.29 7.26 6.17 4.86 0]; % for u == 5
+mu =1;
+c = 1.8;
 A = gamma(1+2./c).^(c./2);
 %time  = [-1.2247 0 1.2247];
 %W = [0.2954 1.1816 0.2954];
@@ -20,30 +20,32 @@ alpha = zeros(1, length(time));
     alpha(i) = exp(-1*c./2.*((sqrt(2)*std_dev.*(time(i))) + mu)); % mu == mean
    end
    
-   Y = zeros(1, length(Pf));
-for j = 1:length(Pf)
+   Y = zeros(1, length(lambda));
+for j = 1:length(lambda)
     
-y = zeros(1,1);
+z = (1./2).*check(u,lambda(j))./gamma(u);
+    
+x = zeros(1,1);
   
           for i = 1:length(time)
         
             for L = 1:10
-                       
-            y1 = (check(u+L, lambda(j))*alpha(i)*W(i)*H_Function_NewTrial([1-L-c./2],[c./2],[], [],[0], [1], [], [], A*alpha(i)));
+            H  = H_Function_NewTrial([1-L-c./2],[c./2],[], [],[0], [1], [], [], A*alpha(i));
+            x1 = (check(u+L, lambda(j)))*alpha(i)*W(i).*H;
+          
+            x2 = gamma(u+L)*gamma(L+1);
             
-            y2 = gamma(u+L)*gamma(L+1);
-            
-            y = y1./y2 +y;
+            x = x1./x2 +x;
             end
             
           end
-y = y*(c*A./(2*sqrt(pi)));
-y
+x = (1 - x)./2 ;
+y = x+z;
 Y(j) = y;
           
 end    
    
-plot(Pf, Y)
+plot(Lambda, Y)
 end
 
 function [out1]  = check(n, lambda)
